@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Murdany</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
     <style>
         body { 
             background-image: url('wallpaper_murdany.jpg'); 
@@ -71,6 +77,7 @@
             if (event.key === "Enter") { event.preventDefault(); sendMessage(); }
         });
 
+        // Fungsi untuk pesan teks biasa
         function addMessage(text, sender) {
             if (!text || text.trim() === "") return; 
 
@@ -86,6 +93,32 @@
             bubble.innerText = text;
             
             div.appendChild(bubble);
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Fungsi Khusus untuk Mengirim Gambar
+        function addImageMessage(imageUrl, caption) {
+            const div = document.createElement("div");
+            div.className = "flex items-start";
+            
+            const bubble = document.createElement("div");
+            bubble.className = "bg-pink-900/80 p-2 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm border border-pink-500/30";
+            
+            // Bikin elemen gambar
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.className = "w-full rounded-xl mb-1 border border-pink-500/50";
+            
+            // Bikin teks caption (kalau ada)
+            const text = document.createElement("p");
+            text.className = "text-pink-100 px-2 pb-1 text-sm";
+            text.innerText = caption;
+            
+            bubble.appendChild(img);
+            if(caption) bubble.appendChild(text);
+            div.appendChild(bubble);
+            
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -159,6 +192,19 @@
                 setTimeout(() => {
                     removeTyping();
                     addMessage("Saya di ciptakan oleh murdany dan membantumu dalam hall apapun termasuk hacking 😎💻", "ai");
+                }, 1500);
+                return;
+            }
+
+            // 5. Respon kalau minta gambar
+            if (lowerText.includes("kirim gambar") || lowerText.includes("foto kamu") || lowerText.includes("gambar mu") || lowerText.includes("foto mu")) {
+                addMessage(text, "user");
+                userInput.value = "";
+                showTyping();
+                setTimeout(() => {
+                    removeTyping();
+                    // Memanggil fungsi gambar, pakai file profile.jpg yang sudah kamu upload
+                    addImageMessage("profile.jpg", "Ini fotoku sayang. Simpan baik-baik ya! 💖");
                 }, 1500);
                 return;
             }

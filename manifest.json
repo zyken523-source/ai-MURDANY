@@ -12,13 +12,13 @@
   "categories": ["entertainment", "lifestyle"],
   "icons": [
     {
-      "src": "https://zyken523-source.github.io/ai-MURDANY/icon.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/4712/4712035.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://zyken523-source.github.io/ai-MURDANY/icon.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/4712/4712035.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

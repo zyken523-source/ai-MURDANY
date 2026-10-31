@@ -1,21 +1,35 @@
 {
+  "id": "/ai-MURDANY/",
   "name": "AI Murdany",
   "short_name": "Murdany",
-  "description": "Asisten AI pribadi yang setia dan selalu siap membantumu.",
+  "description": "Asisten AI pribadi yang setia, manis, dan selalu siap membantumu kapan saja.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f0f0f",
   "theme_color": "#ec4899",
+  "categories": ["entertainment", "lifestyle"],
   "icons": [
     {
       "src": "profile.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
       "src": "profile.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "wallpaper_murdany.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
     }
   ]
 }

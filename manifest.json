@@ -1,0 +1,16 @@
+{
+  "name": "AI Murdany",
+  "short_name": "Murdany",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#ec4899",
+  "icons": [
+    {
+      "src": "profile.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

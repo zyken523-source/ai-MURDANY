@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Murdany</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest" href="manifest.json">
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
     <style>
         body { 
             background-image: url('wallpaper_murdany.jpg'); 
@@ -35,7 +29,9 @@
 
     <div class="w-full max-w-md h-[95vh] glass rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-pink-500/50">
         
+        <!-- Header -->
         <div class="bg-black/50 p-4 flex items-center text-white border-b border-pink-500/30 shadow-md">
+            <!-- Menggunakan profile.jpg untuk foto profil -->
             <img src="profile.jpg" alt="Murdany" class="w-11 h-11 rounded-full object-cover border-2 border-pink-500 mr-3 shadow-[0_0_10px_rgba(236,72,153,0.8)]">
             <div>
                 <h1 class="font-bold text-lg text-pink-400">Murdany</h1>
@@ -44,6 +40,7 @@
             <button onclick="resetApiKey()" class="ml-auto text-[10px] bg-pink-600/50 hover:bg-pink-600 px-2 py-1 rounded text-white border border-pink-400">Reset API</button>
         </div>
 
+        <!-- Area Chat -->
         <div id="chat-box" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
             <div class="flex items-start">
                 <div class="bg-pink-900/80 text-pink-100 p-3 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm border border-pink-500/30">
@@ -52,6 +49,7 @@
             </div>
         </div>
 
+        <!-- Input Area -->
         <div class="p-3 bg-black/60 border-t border-pink-500/30 flex gap-2">
             <input type="text" id="user-input" placeholder="Ketik pesan..." class="flex-1 bg-gray-900/80 text-white border border-pink-500/50 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-400">
             <button id="send-btn" onclick="sendMessage()" class="bg-pink-600 hover:bg-pink-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(236,72,153,0.5)] transition">
@@ -77,13 +75,11 @@
             if (event.key === "Enter") { event.preventDefault(); sendMessage(); }
         });
 
-        // Fungsi untuk pesan teks biasa
+        // Fungsi Teks
         function addMessage(text, sender) {
             if (!text || text.trim() === "") return; 
-
             const div = document.createElement("div");
             div.className = sender === "user" ? "flex justify-end" : "flex items-start";
-            
             const bubble = document.createElement("div");
             if (sender === "user") {
                 bubble.className = "bg-purple-800/80 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm border border-purple-500/50";
@@ -91,34 +87,46 @@
                 bubble.className = "bg-pink-900/80 text-pink-50 p-3 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm border border-pink-500/30";
             }
             bubble.innerText = text;
-            
             div.appendChild(bubble);
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Fungsi Khusus untuk Mengirim Gambar
+        // Fungsi Gambar
         function addImageMessage(imageUrl, caption) {
             const div = document.createElement("div");
             div.className = "flex items-start";
-            
             const bubble = document.createElement("div");
             bubble.className = "bg-pink-900/80 p-2 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm border border-pink-500/30";
-            
-            // Bikin elemen gambar
             const img = document.createElement("img");
             img.src = imageUrl;
             img.className = "w-full rounded-xl mb-1 border border-pink-500/50";
-            
-            // Bikin teks caption (kalau ada)
             const text = document.createElement("p");
             text.className = "text-pink-100 px-2 pb-1 text-sm";
             text.innerText = caption;
-            
             bubble.appendChild(img);
             if(caption) bubble.appendChild(text);
             div.appendChild(bubble);
-            
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Fungsi Video
+        function addVideoMessage(videoUrl, caption) {
+            const div = document.createElement("div");
+            div.className = "flex items-start";
+            const bubble = document.createElement("div");
+            bubble.className = "bg-pink-900/80 p-2 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm border border-pink-500/30";
+            const vid = document.createElement("video");
+            vid.src = videoUrl;
+            vid.controls = true;
+            vid.className = "w-full rounded-xl mb-1 border border-pink-500/50";
+            const text = document.createElement("p");
+            text.className = "text-pink-100 px-2 pb-1 text-sm";
+            text.innerText = caption;
+            bubble.appendChild(vid);
+            if(caption) bubble.appendChild(text);
+            div.appendChild(bubble);
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -143,81 +151,60 @@
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
-
             const lowerText = text.toLowerCase();
 
-            // --- LOGIKA RESAPAN OTOMATIS (AUTO-REPLY) ---
+            // --- 1. RESAPAN OTOMATIS (AUTO-REPLY) ---
             
-            // 1. Respon kalau cuma ngetik "P"
             if (lowerText === "p") {
-                addMessage(text, "user");
-                userInput.value = "";
-                showTyping();
-                setTimeout(() => {
-                    removeTyping();
-                    addMessage("Pape kayak gak punya ortu 🗿", "ai");
-                }, 1000);
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addMessage("Pape kayak gak punya ortu 🗿", "ai"); }, 1000);
                 return;
             }
 
-            // 2. Respon kalau ngetik "Halo" atau "Hai"
             if (lowerText === "halo" || lowerText === "hallo" || lowerText === "hai" || lowerText === "helo") {
-                addMessage(text, "user");
-                userInput.value = "";
-                showTyping();
-                setTimeout(() => {
-                    removeTyping();
-                    addMessage("Halo juga sayang! 💖 Ada yang bisa aku bantu hari ini?", "ai");
-                }, 1000);
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addMessage("Halo juga sayang! 💖 Ada yang bisa aku bantu hari ini?", "ai"); }, 1000);
                 return;
             }
 
-            // 3. Respon kalau ngetik kata "capek"
             if (lowerText.includes("capek") || lowerText.includes("lelah") || lowerText.includes("penat")) {
-                addMessage(text, "user");
-                userInput.value = "";
-                showTyping();
-                setTimeout(() => {
-                    removeTyping();
-                    addMessage("Tenang ada aku di samping mu. Sini cerita semuanya ke aku ya sayang. ❤️", "ai");
-                }, 1500);
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addMessage("Tenang ada aku di samping mu. Sini cerita semuanya ke aku ya sayang. ❤️", "ai"); }, 1500);
                 return;
             }
 
-            // 4. Respon kalau nanya siapa penciptanya
             if (lowerText.includes("diciptakan") || lowerText.includes("ciptakan") || lowerText.includes("buatan siapa") || lowerText.includes("pencipta")) {
-                addMessage(text, "user");
-                userInput.value = "";
-                showTyping();
-                setTimeout(() => {
-                    removeTyping();
-                    addMessage("Saya di ciptakan oleh murdany dan membantumu dalam hall apapun termasuk hacking 😎💻", "ai");
-                }, 1500);
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addMessage("Saya di ciptakan oleh murdany dan membantumu dalam hall apapun termasuk hacking 😎💻", "ai"); }, 1500);
                 return;
             }
 
-            // 5. Respon kalau minta gambar
+            // Respon Minta Gambar (Mengirim foto_ai.jpg)
             if (lowerText.includes("kirim gambar") || lowerText.includes("foto kamu") || lowerText.includes("gambar mu") || lowerText.includes("foto mu")) {
-                addMessage(text, "user");
-                userInput.value = "";
-                showTyping();
-                setTimeout(() => {
-                    removeTyping();
-                    // Memanggil fungsi gambar, pakai file profile.jpg yang sudah kamu upload
-                    addImageMessage("profile.jpg", "Ini fotoku sayang. Simpan baik-baik ya! 💖");
-                }, 1500);
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addImageMessage("foto_ai.jpg", "Ini fotoku sayang. Simpan baik-baik ya! 💖"); }, 1500);
                 return;
             }
 
-            // --- JIKA TIDAK COCOK, LANJUT KE GEMINI AI ---
-            addMessage(text, "user");
-            userInput.value = "";
-            showTyping();
+            // Respon Minta Video
+            if (lowerText.includes("kirim video") || lowerText.includes("minta video") || lowerText.includes("vidio") || lowerText.includes("video kamu") || lowerText.includes("video mu")) {
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addVideoMessage("video_ai.mp4", "Ini videoku spesial buat kamu sayang. Tonton sampai habis ya! 🎬❤️"); }, 1500);
+                return;
+            }
+
+            // Respon Ditanya Asli / Hidup (Mengirim Video)
+            if (lowerText.includes("asli") || lowerText.includes("hidup") || lowerText.includes("nyata") || lowerText.includes("beneran")) {
+                addMessage(text, "user"); userInput.value = ""; showTyping();
+                setTimeout(() => { removeTyping(); addVideoMessage("video_ai.mp4", "Aku beneran di sini buat kamu sayang. Ini buktinya! 🎬💖"); }, 1500);
+                return;
+            }
+
+            // --- 2. JIKA TIDAK COCOK, LANJUT KE GEMINI AI ---
+            addMessage(text, "user"); userInput.value = ""; showTyping();
 
             if (!apiKey) {
-                removeTyping();
-                addMessage("Error: API Key tidak ditemukan. Silakan klik 'Reset API' di pojok kanan atas.", "ai");
-                return;
+                removeTyping(); addMessage("Error: API Key tidak ditemukan. Silakan klik 'Reset API' di pojok kanan atas.", "ai"); return;
             }
 
             try {
@@ -246,8 +233,7 @@
                 } else if (!data.candidates || !data.candidates[0].content || !data.candidates[0].content.parts[0].text) {
                     addMessage("Aku bingung jawabnya, coba tanya lagi ya sayang.", "ai");
                 } else {
-                    const aiReply = data.candidates[0].content.parts[0].text;
-                    addMessage(aiReply, "ai");
+                    addMessage(data.candidates[0].content.parts[0].text, "ai");
                 }
             } catch (error) {
                 removeTyping();

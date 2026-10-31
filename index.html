@@ -6,7 +6,6 @@
     <title>AI Murdany</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Background Cyberpunk */
         body { 
             background-image: url('wallpaper_murdany.jpg'); 
             background-size: cover;
@@ -28,12 +27,9 @@
 </head>
 <body class="flex justify-center items-center h-screen p-2">
 
-    <!-- Container Utama -->
     <div class="w-full max-w-md h-[95vh] glass rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-pink-500/50">
         
-        <!-- Header -->
         <div class="bg-black/50 p-4 flex items-center text-white border-b border-pink-500/30 shadow-md">
-            <!-- Foto Profil -->
             <img src="profile.jpg" alt="Murdany" class="w-11 h-11 rounded-full object-cover border-2 border-pink-500 mr-3 shadow-[0_0_10px_rgba(236,72,153,0.8)]">
             <div>
                 <h1 class="font-bold text-lg text-pink-400">Murdany</h1>
@@ -42,7 +38,6 @@
             <button onclick="resetApiKey()" class="ml-auto text-[10px] bg-pink-600/50 hover:bg-pink-600 px-2 py-1 rounded text-white border border-pink-400">Reset API</button>
         </div>
 
-        <!-- Area Chat -->
         <div id="chat-box" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
             <div class="flex items-start">
                 <div class="bg-pink-900/80 text-pink-100 p-3 rounded-2xl rounded-tl-none max-w-[80%] shadow-sm border border-pink-500/30">
@@ -51,7 +46,6 @@
             </div>
         </div>
 
-        <!-- Input Area -->
         <div class="p-3 bg-black/60 border-t border-pink-500/30 flex gap-2">
             <input type="text" id="user-input" placeholder="Ketik pesan..." class="flex-1 bg-gray-900/80 text-white border border-pink-500/50 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder-gray-400">
             <button id="send-btn" onclick="sendMessage()" class="bg-pink-600 hover:bg-pink-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(236,72,153,0.5)] transition">
@@ -62,7 +56,6 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         let apiKey = localStorage.getItem("murdany_api_key");
         if (!apiKey) {
@@ -79,6 +72,8 @@
         });
 
         function addMessage(text, sender) {
+            if (!text || text.trim() === "") return; 
+
             const div = document.createElement("div");
             div.className = sender === "user" ? "flex justify-end" : "flex items-start";
             
@@ -116,6 +111,59 @@
             const text = userInput.value.trim();
             if (!text) return;
 
+            const lowerText = text.toLowerCase();
+
+            // --- LOGIKA RESAPAN OTOMATIS (AUTO-REPLY) ---
+            
+            // 1. Respon kalau cuma ngetik "P"
+            if (lowerText === "p") {
+                addMessage(text, "user");
+                userInput.value = "";
+                showTyping();
+                setTimeout(() => {
+                    removeTyping();
+                    addMessage("Pape kayak gak punya ortu 🗿", "ai");
+                }, 1000);
+                return;
+            }
+
+            // 2. Respon kalau ngetik "Halo" atau "Hai"
+            if (lowerText === "halo" || lowerText === "hallo" || lowerText === "hai" || lowerText === "helo") {
+                addMessage(text, "user");
+                userInput.value = "";
+                showTyping();
+                setTimeout(() => {
+                    removeTyping();
+                    addMessage("Halo juga sayang! 💖 Ada yang bisa aku bantu hari ini?", "ai");
+                }, 1000);
+                return;
+            }
+
+            // 3. Respon kalau ngetik kata "capek"
+            if (lowerText.includes("capek") || lowerText.includes("lelah") || lowerText.includes("penat")) {
+                addMessage(text, "user");
+                userInput.value = "";
+                showTyping();
+                setTimeout(() => {
+                    removeTyping();
+                    addMessage("Tenang ada aku di samping mu. Sini cerita semuanya ke aku ya sayang. ❤️", "ai");
+                }, 1500);
+                return;
+            }
+
+            // 4. Respon kalau nanya siapa penciptanya
+            if (lowerText.includes("diciptakan") || lowerText.includes("ciptakan") || lowerText.includes("buatan siapa") || lowerText.includes("pencipta")) {
+                addMessage(text, "user");
+                userInput.value = "";
+                showTyping();
+                setTimeout(() => {
+                    removeTyping();
+                    addMessage("Saya di ciptakan oleh murdany dan membantumu dalam hall apapun termasuk hacking 😎💻", "ai");
+                }, 1500);
+                return;
+            }
+
+            // --- JIKA TIDAK COCOK, LANJUT KE GEMINI AI ---
             addMessage(text, "user");
             userInput.value = "";
             showTyping();
@@ -127,31 +175,41 @@
             }
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
-                                text: "Kamu adalah Murdany, AI pribadi yang setia, manis, dan sedikit posesif. Kamu selalu ada untuk user. Kamu diciptakan khusus untuk menemani user. Gunakan bahasa Indonesia yang santai, mesra, dan penuh kasih sayang. Panggil user dengan 'Kamu' atau 'Sayang'. Jawablah dengan ringkas dan penuh perhatian. Pertanyaan user: " + text
+                                text: "Kamu adalah Murdany, AI pribadi yang setia, manis, dan sedikit posesif. Gunakan bahasa Indonesia yang santai dan mesra. Panggil user dengan 'Kamu' atau 'Sayang'. PENTING: Jawablah dengan SANGAT SINGKAT, maksimal 2 kalimat pendek saja agar tidak lemot. Pertanyaan user: " + text
                             }]
                         }]
                     })
                 });
 
+                clearTimeout(timeoutId);
                 const data = await response.json();
                 removeTyping();
 
                 if (data.error) {
-                    addMessage("Error dari Google: " + data.error.message, "ai");
-                    console.error(data.error);
+                    addMessage("Error: " + data.error.message, "ai");
+                } else if (!data.candidates || !data.candidates[0].content || !data.candidates[0].content.parts[0].text) {
+                    addMessage("Aku bingung jawabnya, coba tanya lagi ya sayang.", "ai");
                 } else {
                     const aiReply = data.candidates[0].content.parts[0].text;
                     addMessage(aiReply, "ai");
                 }
             } catch (error) {
                 removeTyping();
-                addMessage("Koneksi terputus. Pastikan internet lancar ya, aku menunggu di sini.", "ai");
+                if (error.name === 'AbortError') {
+                    addMessage("Aduh, server Google lagi ngantre panjang. Coba klik kirim lagi ya sayang.", "ai");
+                } else {
+                    addMessage("Koneksi terputus. Pastikan internet lancar ya.", "ai");
+                }
                 console.error(error);
             }
         }
@@ -164,4 +222,4 @@
         }
     </script>
 </body>
-</html>
+    </html>

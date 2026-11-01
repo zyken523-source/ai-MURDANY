@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.zyken523_source.twa",
+    "sha256_cert_fingerprints": ["AF:BC:EF:15:A1:AE:4F:19:8B:BC:0D:45:DE:5D:03:CE:53:1E:06:CC:B9:BD:F1:C7:3B:9C:D6:FF:29:7A:83:39"]
+  }
+}]
